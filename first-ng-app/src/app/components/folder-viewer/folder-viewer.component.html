@@ -1,0 +1,83 @@
+<div class="folder-viewer">
+  <header class="viewer-header">
+    <h2>📂 {{ rootFolder?.name || 'Folder Viewer' }}</h2>
+    <div class="folder-stats">
+      <div class="stat">
+        <span class="stat-value">{{ itemCounts.files }}</span>
+        <span class="stat-label">Files</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">{{ itemCounts.folders }}</span>
+        <span class="stat-label">Folders</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">{{ formattedTotalSize }}</span>
+        <span class="stat-label">Total Size</span>
+      </div>
+    </div>
+  </header>
+
+
+  <div class="folder-container">
+    <div class="folder-tree">
+      <ul class="folder-list">
+        <ng-container *ngIf="rootFolder">
+          <ng-container *ngTemplateOutlet="folderItem; context: { $implicit: rootFolder, level: 0 }"></ng-container>
+        </ng-container>
+      </ul>
+    </div>
+
+    <div class="item-details" *ngIf="selectedItem">
+      <h3>{{ selectedItem.name }}</h3>
+      <div class="detail-row">
+        <span class="detail-label">Type:</span>
+        <span class="detail-value">{{ selectedItem.type }}</span>
+      </div>
+      <div class="detail-row" *ngIf="selectedItem.type === 'file'">
+        <span class="detail-label">Size:</span>
+        <span class="detail-value">{{ getItemSize(selectedItem) }}</span>
+      </div>
+      <div class="detail-row" *ngIf="selectedItem.type === 'folder'">
+        <span class="detail-label">Items:</span>
+        <span class="detail-value">
+          {{ folderService.countItems(selectedItem).fileCount }} files, 
+          {{ folderService.countItems(selectedItem).folderCount - 1 }} folders
+        </span>
+      </div>
+      <div class="detail-row" *ngIf="selectedItem.type === 'folder'">
+        <span class="detail-label">Total Size:</span>
+        <span class="detail-value">{{ getItemSize(selectedItem) }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recursive template for folder items -->
+<ng-template #folderItem let-folder let-level="level">
+  <li [class.folder-item]="folder.type === 'folder'" 
+      [class.file-item]="folder.type === 'file'"
+      [class.selected]="isSelected(folder)"
+      (click)="selectItem(folder)">
+    <div class="item-header" 
+         [style.padding-left.px]="level * 20 + 16"
+         (click)="$event.stopPropagation(); toggleFolder($event, folder)">
+      <span class="icon">{{ getItemIcon(folder) }}</span>
+      <span class="name" [title]="folder.name">{{ folder.name }}</span>
+      <span class="spacer"></span>
+      <span class="size">
+        {{ getItemSize(folder) }}
+      </span>
+      <span class="toggle" *ngIf="folder.type === 'folder'">
+        {{ folder.expanded ? '▼' : '▶' }}
+      </span>
+    </div>
+    
+    <div class="folder-children" *ngIf="folder.type === 'folder' && folder.expanded && folder.children?.length">
+      <ul class="folder-list">
+        <ng-container *ngFor="let child of folder.children">
+          <ng-container *ngTemplateOutlet="folderItem; context: { $implicit: child, level: level + 1 }"></ng-container>
+        </ng-container>
+      </ul>
+    </div>
+  </li>
+</ng-template>

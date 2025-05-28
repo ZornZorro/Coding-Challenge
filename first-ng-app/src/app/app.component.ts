@@ -5,20 +5,23 @@ import { HeaderComponent } from './components/header/header.component';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [RouterOutlet, HomeComponent, HeaderComponent],
   template: `
-    <app-header />
-    <main>
-      <app-home/>
+    <app-header></app-header>
+    <main class="main-content">
+      <app-home></app-home>
     </main>
   `,
-  styles: [
-    `
-    main{
+  styles: [`
+    .main-content {
       padding: 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      box-sizing: border-box;
     }
-    `
-  ],
+  `]
 })
 export class AppComponent {
   title = 'first-ng-app';
