@@ -4,7 +4,7 @@
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f5f7fa;
-  padding: 1rem;
+  padding: 16px;
 }
 
 .main-content {
@@ -12,16 +12,16 @@
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: 32px 24px;
   box-sizing: border-box;
 }
 
 .footer {
   text-align: center;
-  padding: 1.5rem;
+  padding: 24px;
   background: #2c3e50;
   color: #ecf0f1;
-  font-size: 0.9rem;
+  font-size: 14.4px;
   margin-top: auto;
   
   p {
@@ -32,6 +32,6 @@
 // Responsive adjustments
 @media (max-width: 768px) {
   .main-content {
-    padding: 1.5rem 1rem;
+    padding: 24px 16px;
   }
 }

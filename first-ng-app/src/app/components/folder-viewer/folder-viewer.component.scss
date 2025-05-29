@@ -12,13 +12,13 @@
   max-height: 800px;
 
   .viewer-header {
-    padding: 1.5rem 2rem;
+    padding: 24px 32px;
     background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
     color: white;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 
     h2 {
-      margin: 0 0 1rem 0;
+      margin: 0 0 16px 0;
       font-weight: 600;
       font-size: 1.5rem;
       display: flex;
@@ -30,15 +30,15 @@
 
   .folder-stats {
     display: flex;
-    gap: 1.5rem;
-    margin-top: 1rem;
+    gap: 24px;
+    margin-top: 16px;
 
     .stat {
       display: flex;
       flex-direction: column;
       align-items: center;
       background: rgba(255, 255, 255, 0.15);
-      padding: 0.75rem 1.25rem;
+      padding: 12px 20px;
       border-radius: 8px;
       min-width: 100px;
       transition: transform 0.2s, background 0.2s;
@@ -49,13 +49,13 @@
       }
 
       .stat-value {
-        font-size: 1.5rem;
+        font-size: 24px;
         font-weight: 600;
-        margin-bottom: 0.25rem;
+        margin-bottom: 4px;
       }
 
       .stat-label {
-        font-size: 0.85rem;
+        font-size: 13.6px;
         opacity: 0.9;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -85,7 +85,7 @@
 
   .folder-item,
   .file-item {
-    margin: 0.15rem 0;
+    margin: 2.4px 0;
     border-radius: 6px;
     transition: all 0.2s ease;
     position: relative;
@@ -103,15 +103,15 @@
   .item-header {
     display: flex;
     align-items: center;
-    padding: 0.5rem 1rem;
+    padding: 8px 16px;
     cursor: pointer;
     user-select: none;
     border-radius: 6px;
     transition: all 0.2s ease;
 
     .icon {
-      margin-right: 0.75rem;
-      font-size: 1.2rem;
+      margin-right: 12px;
+      font-size: 19.2px;
       width: 20px;
       text-align: center;
     }
@@ -122,11 +122,11 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      font-size: 0.95rem;
+      font-size: 15.2px;
     }
 
     .spacer {
-      flex: 0 0 1rem;
+      flex: 0 0 16px;
     }
 
     .size {
@@ -146,9 +146,9 @@
   }
 
   .folder-children {
-    margin-left: 1.5rem;
+    margin-left: 24px;
     border-left: 2px solid #e9ecef;
-    padding-left: 1rem;
+    padding-left: 16px;
     position: relative;
     overflow: hidden;
 
@@ -171,14 +171,14 @@
     overflow-y: auto;
 
     h3 {
-      margin: 0 0 1.25rem 0;
-      padding-bottom: 0.75rem;
+      margin: 0 0 20px 0;
+      padding-bottom: 12px;
       border-bottom: 1px solid #e9ecef;
       color: #2c3e50;
-      font-size: 1.25rem;
+      font-size: 20px;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 8px;
 
       &::before {
         content: attr(data-icon);
@@ -188,8 +188,8 @@
 
     .detail-row {
       display: flex;
-      margin-bottom: 0.75rem;
-      font-size: 0.9rem;
+      margin-bottom: 12px;
+      font-size: 14.4px;
 
       .detail-label {
         font-weight: 600;
@@ -257,7 +257,7 @@
 
   @media (max-width: 576px) {
     .viewer-header {
-      padding: 1.25rem 1.5rem;
+      padding: 20px 24px;
     }
 
     .folder-stats {
@@ -268,11 +268,11 @@
         flex-direction: row;
         justify-content: space-between;
         min-width: auto;
-        padding: 0.6rem 1rem;
+        padding: 9.6px 16px;
 
         .stat-value {
           margin-bottom: 0;
-          margin-right: 1rem;
+          margin-right: 16px;
         }
       }
     }
