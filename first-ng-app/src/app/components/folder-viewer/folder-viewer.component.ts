@@ -93,8 +93,14 @@ export class FolderViewerComponent implements OnInit, AfterViewInit {
   createNewFolder(): void {
     if (!this.newFolderName.trim() || !this.currentParent) return;
     
+    // Kürze den Namen auf 15 Zeichen und füge '...' hinzu, falls nötig
+    let folderName = this.newFolderName.trim();
+    if (folderName.length > 15) {
+      folderName = folderName.substring(0, 15) + '...';
+    }
+    
     const newFolder: Folder = {
-      name: this.newFolderName.trim(),
+      name: folderName,
       type: 'folder',
       expanded: false,
       children: [],
@@ -108,7 +114,7 @@ export class FolderViewerComponent implements OnInit, AfterViewInit {
     
     this.currentParent.children.push(newFolder);
     this.currentParent.expanded = true;
-    this.hideContextMenu(); // Verwende hideContextMenu, um den Zustand zurückzusetzen
+    this.hideContextMenu();
     this.updateFolderStats();
   }
 
@@ -154,8 +160,14 @@ export class FolderViewerComponent implements OnInit, AfterViewInit {
     const file = input.files[0];
     if (!this.currentParent) return;
 
+    // Kürze den Dateinamen auf 15 Zeichen und füge '...' hinzu, falls nötig
+    let fileName = file.name;
+    if (fileName.length > 15) {
+      fileName = fileName.substring(0, 15) + '...';
+    }
+
     const newFile: Folder = {
-      name: file.name,
+      name: fileName,
       type: 'file',
       size: file.size,
       modified: new Date(file.lastModified),
