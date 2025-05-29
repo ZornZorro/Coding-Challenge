@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Folder } from '../../models/folder.model';
 import { FolderService } from '../../services/folder.service';
 
@@ -11,22 +12,122 @@ interface ItemCounts {
 @Component({
   selector: 'app-folder-viewer',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './folder-viewer.component.html',
   styleUrls: ['./folder-viewer.component.scss']
 })
 
-export class FolderViewerComponent implements OnInit {
+export class FolderViewerComponent implements OnInit, AfterViewInit {
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('folderNameInput') folderNameInput!: ElementRef<HTMLInputElement>;
+  
   rootFolder: Folder | null = null;
   totalSize: number = 0;
   formattedTotalSize: string = '0 Bytes';
   itemCounts: ItemCounts = { files: 0, folders: 0 };
+  
+  showMenu: boolean = false;
   selectedItem: Folder | null = null;
+  showFolderNameInput: boolean = false;
+  newFolderName: string = '';
+  currentParent: Folder | null = null;
 
-  constructor(public folderService: FolderService) {}
+  constructor(private folderService: FolderService) {}
+
+  toggleContextMenu(event: MouseEvent, folder: Folder): void {
+    event.stopPropagation();
+    if (folder.type !== 'folder') return;
+    
+    if (this.selectedItem === folder && this.showMenu) {
+      this.showMenu = false;
+      this.showFolderNameInput = false;
+    } else {
+      this.selectedItem = folder;
+      this.showMenu = true;
+      this.currentParent = folder;
+      this.showFolderNameInput = false;
+    }
+  }
+
+  showNewFolderInput(folder: Folder): void {
+    this.showFolderNameInput = true;
+    this.selectedItem = folder;
+    this.currentParent = folder;
+    // Fokus auf das Eingabefeld setzen, sobald es angezeigt wird
+    setTimeout(() => {
+      const input = document.querySelector('.folder-name-input input') as HTMLInputElement;
+      if (input) {
+        input.focus();
+      }
+    });
+  }
+
+  triggerFileInput(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+  hideContextMenu(): void {
+    this.showMenu = false;
+    this.showFolderNameInput = false;
+    this.newFolderName = '';
+  }
+
+  addFolder(): void {
+    if (!this.currentParent || !this.newFolderName.trim()) {
+      this.hideContextMenu();
+      return;
+    }
+
+    const newFolder: Folder = {
+      name: this.newFolderName.trim(),
+      type: 'folder',
+      expanded: false,
+      parent: this.currentParent,
+      children: []
+    };
+
+    if (!this.currentParent.children) {
+      this.currentParent.children = [];
+    }
+    this.currentParent.children.push(newFolder);
+    
+    this.updateFolderStats();
+    this.hideContextMenu();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    if (!this.currentParent) return;
+
+    const newFile: Folder = {
+      name: file.name,
+      type: 'file',
+      size: file.size,
+      modified: new Date(file.lastModified),
+      parent: this.currentParent
+    };
+
+    if (!this.currentParent.children) {
+      this.currentParent.children = [];
+    }
+    this.currentParent.children.push(newFile);
+    
+    this.updateFolderStats();
+    this.hideContextMenu();
+  }
+
+  ngAfterViewInit(): void {
+    // Setze den Fokus auf das Eingabefeld, wenn es angezeigt wird
+    if (this.folderNameInput) {
+      this.folderNameInput.nativeElement.focus();
+    }
+  }
 
   ngOnInit(): void {
-    this.rootFolder = this.folderService.getRootFolder();
+    this.rootFolder = this.folderService.getFolderStructure();
     this.updateFolderStats();
   }
 

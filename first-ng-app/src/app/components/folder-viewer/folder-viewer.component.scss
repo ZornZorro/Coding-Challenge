@@ -81,6 +81,12 @@
     list-style: none;
     padding: 0;
     margin: 0;
+  
+    /* Entferne die Standard-Listenelementpunkte */
+    ul, ol {
+      list-style: none;
+      padding-left: 20px; /* Behalte die Einrückung bei */
+    }
   }
 
   .folder-item,
@@ -206,6 +212,82 @@
       .detail-value {
         color: #6c757d;
         word-break: break-word;
+      }
+    }
+  }
+
+  .context-menu-container {
+    position: relative;
+    display: inline-block;
+    margin-left: 8px;
+
+    .menu-dots {
+      cursor: pointer;
+      padding: 2px 8px;
+      border-radius: 4px;
+      user-select: none;
+      font-size: 1.2em;
+      line-height: 1;
+      color: #666;
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+
+      &:hover {
+        background-color: #f0f0f0;
+      }
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      z-index: 1000;
+      display: none;
+      min-width: 160px;
+      padding: 4px 0;
+      margin: 2px 0 0;
+      font-size: 14px;
+      text-align: left;
+      background-color: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+
+      &.show {
+        display: block;
+      }
+
+      .dropdown-item {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 8px 16px;
+        clear: both;
+        font-weight: 400;
+        color: #212529;
+        text-align: inherit;
+        white-space: nowrap;
+        background-color: transparent;
+        border: 0;
+        cursor: pointer;
+        transition: background-color 0.2s;
+
+        &:hover {
+          background-color: #f8f9fa;
+          color: #16181b;
+          text-decoration: none;
+        }
+
+        .menu-icon {
+          margin-right: 8px;
+          width: 20px;
+          text-align: center;
+        }
       }
     }
   }

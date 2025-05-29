@@ -4,4 +4,6 @@ export interface Folder {
   size?: number;
   children?: Folder[];
   expanded?: boolean;
+  parent?: Folder;
+  modified?: Date;
 }

@@ -38,6 +38,11 @@ export class FolderService {
     return this.rootFolder;
   }
 
+  // Alias für getRootFolder für bessere Lesbarkeit
+  getFolderStructure(): Folder {
+    return this.getRootFolder();
+  }
+
 
   toggleFolder(folder: Folder): void {
     if (folder.type === 'folder') {

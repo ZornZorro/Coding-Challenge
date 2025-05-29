@@ -1,82 +1,136 @@
-<div class="folder-viewer">
+<!-- Versteckte Inputs -->
+<input #fileInput type="file" style="display: none;" (change)="onFileSelected($event)">
+
+<div class="folder-viewer" (click)="hideContextMenu()">
   <header class="viewer-header">
     <h2>📂 {{ rootFolder?.name || 'Folder Viewer' }}</h2>
-    <div class="folder-stats">
-      <div class="stat">
-        <span class="stat-value">{{ itemCounts.files }}</span>
-        <span class="stat-label">Files</span>
-      </div>
-      <div class="stat">
-        <span class="stat-value">{{ itemCounts.folders }}</span>
-        <span class="stat-label">Folders</span>
-      </div>
-      <div class="stat">
-        <span class="stat-value">{{ formattedTotalSize }}</span>
-        <span class="stat-label">Total Size</span>
-      </div>
+    <div class="stats">
+      <span class="stat">📁 {{ itemCounts.folders }} Ordner</span>
+      <span class="stat">📄 {{ itemCounts.files }} Dateien</span>
+      <span class="stat">📊 {{ formattedTotalSize }}</span>
     </div>
   </header>
-
 
   <div class="folder-container">
     <div class="folder-tree">
       <ul class="folder-list">
         <ng-container *ngIf="rootFolder">
-          <ng-container *ngTemplateOutlet="folderItem; context: { $implicit: rootFolder, level: 0 }"></ng-container>
+          <li class="folder-item" [class.expanded]="rootFolder.expanded">
+            <div class="item-header" (click)="toggleFolder($event, rootFolder)">
+              <span class="icon">{{ getItemIcon(rootFolder) }}</span>
+              <span class="name" [title]="rootFolder.name">{{ rootFolder.name }}</span>
+              <span class="spacer"></span>
+              
+              <!-- Kontextmenü für den Root-Ordner -->
+              <div class="context-menu-container">
+                <span class="menu-dots" (click)="$event.stopPropagation(); toggleContextMenu($event, rootFolder)">
+                  ⋯
+                </span>
+                <div class="dropdown-menu" [class.show]="showMenu && selectedItem === rootFolder" (click)="$event.stopPropagation()">
+                  <button class="dropdown-item" (click)="showNewFolderInput(rootFolder)">
+                    <span class="menu-icon">📁</span>
+                    <span>Neuer Ordner</span>
+                  </button>
+                  <button class="dropdown-item" (click)="triggerFileInput()">
+                    <span class="menu-icon">📄</span>
+                    <span>Datei hochladen</span>
+                  </button>
+                </div>
+                
+                <!-- Eingabefeld für den neuen Ordnernamen -->
+                <div class="folder-name-input" *ngIf="showFolderNameInput && selectedItem === rootFolder" (click)="$event.stopPropagation()">
+                  <input 
+                    #folderNameInput
+                    type="text" 
+                    [(ngModel)]="newFolderName" 
+                    (keyup.enter)="addFolder()" 
+                    (keyup.escape)="hideContextMenu()"
+                    placeholder="Ordnername eingeben"
+                    autofocus>
+                  <div class="button-group">
+                    <button (click)="addFolder()" [disabled]="!newFolderName.trim()">Erstellen</button>
+                    <button (click)="hideContextMenu()">Abbrechen</button>
+                  </div>
+                </div>
+              </div>
+              
+              <span class="size">
+                {{ getItemSize(rootFolder) }}
+              </span>
+              <span class="toggle" *ngIf="rootFolder.children?.length">
+                {{ rootFolder.expanded ? '▼' : '▶' }}
+              </span>
+            </div>
+            
+            <!-- Unterordner -->
+            <ul class="folder-children" *ngIf="rootFolder.expanded && rootFolder.children">
+              <ng-container *ngFor="let child of rootFolder.children">
+                <ng-container [ngTemplateOutlet]="folderItemTmpl" [ngTemplateOutletContext]="{ $implicit: child, level: 1 }">
+                </ng-container>
+              </ng-container>
+            </ul>
+          </li>
         </ng-container>
       </ul>
-    </div>
-
-    <div class="item-details" *ngIf="selectedItem">
-      <h3>{{ selectedItem.name }}</h3>
-      <div class="detail-row">
-        <span class="detail-label">Type:</span>
-        <span class="detail-value">{{ selectedItem.type }}</span>
-      </div>
-      <div class="detail-row" *ngIf="selectedItem.type === 'file'">
-        <span class="detail-label">Size:</span>
-        <span class="detail-value">{{ getItemSize(selectedItem) }}</span>
-      </div>
-      <div class="detail-row" *ngIf="selectedItem.type === 'folder'">
-        <span class="detail-label">Items:</span>
-        <span class="detail-value">
-          {{ folderService.countItems(selectedItem).fileCount }} files, 
-          {{ folderService.countItems(selectedItem).folderCount - 1 }} folders
-        </span>
-      </div>
-      <div class="detail-row" *ngIf="selectedItem.type === 'folder'">
-        <span class="detail-label">Total Size:</span>
-        <span class="detail-value">{{ getItemSize(selectedItem) }}</span>
-      </div>
     </div>
   </div>
 </div>
 
-<ng-template #folderItem let-folder let-level="level">
-  <li [class.folder-item]="folder.type === 'folder'" 
-      [class.file-item]="folder.type === 'file'"
-      [class.selected]="isSelected(folder)"
-      (click)="selectItem(folder)">
-    <div class="item-header" 
-         [style.padding-left.px]="level * 20 + 16"
-         (click)="$event.stopPropagation(); toggleFolder($event, folder)">
+<!-- Template für Unterordner -->
+<ng-template #folderItemTmpl let-folder let-level="level">
+  <li class="folder-item" [class.expanded]="folder.expanded">
+    <div class="item-header" (click)="toggleFolder($event, folder)">
       <span class="icon">{{ getItemIcon(folder) }}</span>
       <span class="name" [title]="folder.name">{{ folder.name }}</span>
       <span class="spacer"></span>
+      
+      <!-- Kontextmenü für Unterordner -->
+      <div class="context-menu-container" *ngIf="folder.type === 'folder'">
+        <span class="menu-dots" (click)="$event.stopPropagation(); toggleContextMenu($event, folder)">
+          ⋯
+        </span>
+        <div class="dropdown-menu" [class.show]="showMenu && selectedItem === folder" (click)="$event.stopPropagation()">
+          <button class="dropdown-item" (click)="showNewFolderInput(folder)">
+            <span class="menu-icon">📁</span>
+            <span>Neuer Ordner</span>
+          </button>
+          <button class="dropdown-item" (click)="triggerFileInput()">
+            <span class="menu-icon">📄</span>
+            <span>Datei hochladen</span>
+          </button>
+        </div>
+        
+        <!-- Eingabefeld für den neuen Ordnernamen -->
+        <div class="folder-name-input" *ngIf="showFolderNameInput && selectedItem === folder" (click)="$event.stopPropagation()">
+          <input 
+            #folderNameInput
+            type="text" 
+            [(ngModel)]="newFolderName" 
+            (keyup.enter)="addFolder()" 
+            (keyup.escape)="hideContextMenu()"
+            placeholder="Ordnername eingeben"
+            autofocus>
+          <div class="button-group">
+            <button (click)="addFolder()" [disabled]="!newFolderName.trim()">Erstellen</button>
+            <button (click)="hideContextMenu()">Abbrechen</button>
+          </div>
+        </div>
+      </div>
+      
       <span class="size">
         {{ getItemSize(folder) }}
       </span>
-      <span class="toggle" *ngIf="folder.type === 'folder'">
+      <span class="toggle" *ngIf="folder.children?.length">
         {{ folder.expanded ? '▼' : '▶' }}
       </span>
     </div>
     
-    <div class="folder-children" *ngIf="folder.type === 'folder' && folder.expanded && folder.children?.length">
-      <ul class="folder-list">
-        <ng-container *ngFor="let child of folder.children">
-          <ng-container *ngTemplateOutlet="folderItem; context: { $implicit: child, level: level + 1 }"></ng-container>
+    <!-- Unterordner -->
+    <ul class="folder-children" *ngIf="folder.expanded && folder.children">
+      <ng-container *ngFor="let child of folder.children">
+        <ng-container [ngTemplateOutlet]="folderItemTmpl" [ngTemplateOutletContext]="{ $implicit: child, level: level + 1 }">
         </ng-container>
-      </ul>
-    </div>
+      </ng-container>
+    </ul>
   </li>
 </ng-template>
