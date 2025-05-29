@@ -126,14 +126,19 @@
     }
 
     .spacer {
-      flex: 0 0 16px;
+      flex: 0 0 200px;
     }
 
     .size {
       color: #6c757d;
       font-size: 0.85em;
       font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-      margin-left: 0.5rem;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 60px;
+      text-align: center;
+      pointer-events: none;
     }
 
     .toggle {
