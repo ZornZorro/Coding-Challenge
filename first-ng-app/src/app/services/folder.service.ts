@@ -8,16 +8,15 @@ export class FolderService {
   private rootFolder: Folder = {
     name: 'Root',
     type: 'folder',
-    expanded: true,
+    expanded: false,
     children: [
       {
         name: 'Documents',
         type: 'folder',
         expanded: false,
         children: [
-          { name: 'report.pdf', type: 'file', size: 2.5 * 1024 * 1024 },
-          { name: 'presentation.pptx', type: 'file', size: 5.7 * 1024 * 1024 },
-          { name: 'notes.txt', type: 'file', size: 12 * 1024 }
+          { name: 'report.pdf', type: 'file', size: 3 * 1024 * 1024 },
+          { name: 'presentation.pptx', type: 'file', size: 7 * 1024 * 1024 },
         ]
       },
       {
@@ -25,31 +24,10 @@ export class FolderService {
         type: 'folder',
         expanded: false,
         children: [
-          { name: 'vacation.jpg', type: 'file', size: 3.2 * 1024 * 1024 },
-          { name: 'profile.png', type: 'file', size: 1.1 * 1024 * 1024 },
-          {
-            name: 'Screenshots',
-            type: 'folder',
-            expanded: false,
-            children: [
-              { name: 'screenshot1.png', type: 'file', size: 0.8 * 1024 * 1024 },
-              { name: 'screenshot2.png', type: 'file', size: 0.9 * 1024 * 1024 }
-            ]
-          }
+          { name: 'vacation.jpg', type: 'file', size: 5 * 1024 * 1024 },
         ]
       },
-      {
-        name: 'Projects',
-        type: 'folder',
-        expanded: false,
-        children: [
-          { name: 'project1', type: 'folder', children: [] },
-          { name: 'project2', type: 'folder', children: [] },
-          { name: 'archive.zip', type: 'file', size: 45.3 * 1024 * 1024 }
-        ]
-      },
-      { name: 'README.md', type: 'file', size: 2.1 * 1024 },
-      { name: 'package.json', type: 'file', size: 1.2 * 1024 }
+      { name: 'package.json', type: 'file', size: 2 * 1024 * 1024}
     ]
   };
 
