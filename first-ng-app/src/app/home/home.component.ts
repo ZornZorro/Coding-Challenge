@@ -10,10 +10,5 @@ import { FolderViewerComponent } from '../components/folder-viewer/folder-viewer
   imports: [CommonModule, FolderViewerComponent]
 })
 export class HomeComponent {
-  homeMessage = signal("Hello World");
-  currentYear = new Date().getFullYear();
-
-  keyUpHandler(event: KeyboardEvent) {
-    console.log(`user pressed the ${event.key} key`);
-  }
+  currentYear = new Date().getFullYear();;
 }

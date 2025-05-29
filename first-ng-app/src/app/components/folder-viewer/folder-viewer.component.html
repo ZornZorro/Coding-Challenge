@@ -52,7 +52,6 @@
   </div>
 </div>
 
-<!-- Recursive template for folder items -->
 <ng-template #folderItem let-folder let-level="level">
   <li [class.folder-item]="folder.type === 'folder'" 
       [class.file-item]="folder.type === 'file'"

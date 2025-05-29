@@ -6,22 +6,9 @@ import { HeaderComponent } from './components/header/header.component';
   selector: 'app-root',
   standalone: true,
   imports: [HomeComponent, HeaderComponent],
-  template: `
-    <app-header></app-header>
-    <main class="main-content">
-      <app-home></app-home>
-    </main>
-  `,
-  styles: [`
-    .main-content {
-      padding: 16px;
-      max-width: 1200px;
-      margin: 0 auto;
-      width: 100%;
-      box-sizing: border-box;
-    }
-  `]
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'first-ng-app';
+
 }

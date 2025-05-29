@@ -15,6 +15,7 @@ interface ItemCounts {
   templateUrl: './folder-viewer.component.html',
   styleUrls: ['./folder-viewer.component.scss']
 })
+
 export class FolderViewerComponent implements OnInit {
   rootFolder: Folder | null = null;
   totalSize: number = 0;
@@ -29,11 +30,6 @@ export class FolderViewerComponent implements OnInit {
     this.updateFolderStats();
   }
 
-  /**
-   * Toggle the expanded state of a folder
-   * @param event Click event
-   * @param folder The folder to toggle
-   */
   toggleFolder(event: Event, folder: Folder): void {
     event.stopPropagation();
     if (folder.type === 'folder') {
@@ -42,28 +38,15 @@ export class FolderViewerComponent implements OnInit {
     }
   }
 
-  /**
-   * Select an item (file or folder)
-   * @param item The item to select
-   */
   selectItem(item: Folder): void {
     this.selectedItem = item;
   }
 
-  /**
-   * Check if an item is currently selected
-   * @param item The item to check
-   * @returns True if the item is selected
-   */
   isSelected(item: Folder): boolean {
     return this.selectedItem === item;
   }
 
-  /**
-   * Get the size of an item, formatted for display
-   * @param item The item to get the size for
-   * @returns Formatted size string
-   */
+
   getItemSize(item: Folder): string {
     if (item.type === 'file') {
       return this.folderService.formatSize(item.size || 0);
@@ -72,14 +55,9 @@ export class FolderViewerComponent implements OnInit {
     return this.folderService.formatSize(size);
   }
 
-  /**
-   * Get the appropriate icon for an item
-   * @param item The item to get the icon for
-   * @returns Icon string
-   */
+
   getItemIcon(item: Folder): string {
     if (item.type === 'file') {
-      // Return different icons based on file extension
       const ext = item.name.split('.').pop()?.toLowerCase();
       switch (ext) {
         case 'pdf':
@@ -111,9 +89,7 @@ export class FolderViewerComponent implements OnInit {
     }
   }
 
-  /**
-   * Update folder statistics (total size and item counts)
-   */
+
   private updateFolderStats(): void {
     if (this.rootFolder) {
       this.totalSize = this.folderService.calculateTotalSize(this.rootFolder);
@@ -122,7 +98,7 @@ export class FolderViewerComponent implements OnInit {
       const counts = this.folderService.countItems(this.rootFolder);
       this.itemCounts = {
         files: counts.fileCount,
-        folders: counts.folderCount - 1 // Subtract 1 to exclude the root folder
+        folders: counts.folderCount - 1
       };
     }
   }

@@ -55,28 +55,18 @@ export class FolderService {
 
   constructor() {}
 
-  /**
-   * Get the root folder structure
-   */
+
   getRootFolder(): Folder {
     return this.rootFolder;
   }
 
-  /**
-   * Toggle the expanded state of a folder
-   * @param folder The folder to toggle
-   */
+
   toggleFolder(folder: Folder): void {
     if (folder.type === 'folder') {
       folder.expanded = !folder.expanded;
     }
   }
 
-  /**
-   * Calculate the total size of a folder and its contents
-   * @param folder The folder to calculate size for
-   * @returns Total size in bytes
-   */
   calculateTotalSize(folder: Folder): number {
     if (!folder) return 0;
     
@@ -93,11 +83,7 @@ export class FolderService {
     }, 0);
   }
 
-  /**
-   * Format a size in bytes to a human-readable string
-   * @param bytes Size in bytes
-   * @returns Formatted size string
-   */
+
   formatSize(bytes: number): string {
     if (bytes === 0) return '0 Bytes';
     
@@ -105,23 +91,17 @@ export class FolderService {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     
-    // Handle cases where the size is exactly on a boundary (e.g., 1024 bytes = 1 KB)
     const formattedValue = parseFloat((bytes / Math.pow(k, i)).toFixed(2));
     return `${formattedValue} ${sizes[i]}`;
   }
   
-  /**
-   * Count the number of items (files and folders) in a folder
-   * @param folder The folder to count items in
-   * @returns Object with fileCount and folderCount
-   */
   countItems(folder: Folder): { fileCount: number, folderCount: number } {
     if (folder.type === 'file') {
       return { fileCount: 1, folderCount: 0 };
     }
     
     if (!folder.children || folder.children.length === 0) {
-      return { fileCount: 0, folderCount: 1 }; // Count empty folder as 1 folder
+      return { fileCount: 0, folderCount: 1 };
     }
     
     return folder.children.reduce((counts, child) => {
@@ -130,6 +110,6 @@ export class FolderService {
         fileCount: counts.fileCount + childCounts.fileCount,
         folderCount: counts.folderCount + childCounts.folderCount
       };
-    }, { fileCount: 0, folderCount: 1 }); // Start with 1 to count the current folder
+    }, { fileCount: 0, folderCount: 1 });
   }
 }

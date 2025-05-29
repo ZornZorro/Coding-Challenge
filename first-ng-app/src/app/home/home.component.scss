@@ -2,9 +2,10 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI';
   background-color: #f5f7fa;
   padding: 16px;
+  border-radius: 15px
 }
 
 .main-content {
@@ -26,12 +27,5 @@
   
   p {
     margin: 0;
-  }
-}
-
-// Responsive adjustments
-@media (max-width: 768px) {
-  .main-content {
-    padding: 24px 16px;
   }
 }

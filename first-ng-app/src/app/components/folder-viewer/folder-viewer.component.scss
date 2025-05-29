@@ -205,7 +205,6 @@
     }
   }
 
-  /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -226,7 +225,6 @@
     }
   }
 
-  /* Animation for expanding/collapsing */
   .folder-children {
     animation: fadeIn 0.2s ease-out;
   }
@@ -242,7 +240,6 @@
     }
   }
 
-  /* Responsive adjustments */
   @media (max-width: 992px) {
     .folder-container {
       flex-direction: column;
