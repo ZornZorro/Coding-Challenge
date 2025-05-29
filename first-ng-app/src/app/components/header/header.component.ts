@@ -9,5 +9,4 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {
-  // Komponentenlogik hier, falls benötigt
 }
