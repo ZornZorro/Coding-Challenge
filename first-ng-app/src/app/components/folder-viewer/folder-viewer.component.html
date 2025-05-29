@@ -1,6 +1,40 @@
 <!-- Versteckte Inputs -->
 <input #fileInput type="file" style="display: none;" (change)="onFileSelected($event)">
 
+<!-- Modal für die Ordnernamen-Eingabe -->
+<div class="modal-overlay" *ngIf="showFolderNameInput">
+  <div class="modal-content" (keydown.escape)="hideContextMenu()">
+    <h3>Neuen Ordner erstellen</h3>
+    <div class="folder-name-input">
+      <input 
+        type="text" 
+        [(ngModel)]="newFolderName" 
+        (keyup.enter)="createNewFolder()"
+        placeholder="Ordnername eingeben"
+        #folderNameInput
+        autofocus>
+      <div class="button-group">
+        <button (click)="createNewFolder()" [disabled]="!newFolderName.trim()">Erstellen</button>
+        <button (click)="hideContextMenu()">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Kontextmenü -->
+<div class="context-menu-overlay" *ngIf="showMenu" (click)="hideContextMenu()">
+  <div class="context-menu" [ngStyle]="contextMenuPosition" (click)="$event.stopPropagation()">
+    <button class="dropdown-item" (click)="showNewFolderInput(selectedItem!); $event.stopPropagation()">
+      <span class="menu-icon">📁</span>
+      <span>Neuer Ordner</span>
+    </button>
+    <button class="dropdown-item" (click)="triggerFileInput(); $event.stopPropagation()">
+      <span class="menu-icon">📄</span>
+      <span>Datei hochladen</span>
+    </button>
+  </div>
+</div>
+
 <div class="folder-viewer" (click)="hideContextMenu()">
   <header class="viewer-header">
     <h2>📂 {{ rootFolder?.name || 'Folder Viewer' }}</h2>
@@ -18,6 +52,7 @@
           <li class="folder-item" [class.expanded]="rootFolder.expanded">
             <div class="item-header" (click)="toggleFolder($event, rootFolder)">
               <span class="icon">{{ getItemIcon(rootFolder) }}</span>
+              <span class="size">{{ getItemSize(rootFolder) }}</span>
               <span class="name" [title]="rootFolder.name">{{ rootFolder.name }}</span>
               <span class="spacer"></span>
               
@@ -26,37 +61,8 @@
                 <span class="menu-dots" (click)="$event.stopPropagation(); toggleContextMenu($event, rootFolder)">
                   ⋯
                 </span>
-                <div class="dropdown-menu" [class.show]="showMenu && selectedItem === rootFolder" (click)="$event.stopPropagation()">
-                  <button class="dropdown-item" (click)="showNewFolderInput(rootFolder)">
-                    <span class="menu-icon">📁</span>
-                    <span>Neuer Ordner</span>
-                  </button>
-                  <button class="dropdown-item" (click)="triggerFileInput()">
-                    <span class="menu-icon">📄</span>
-                    <span>Datei hochladen</span>
-                  </button>
-                </div>
-                
-                <!-- Eingabefeld für den neuen Ordnernamen -->
-                <div class="folder-name-input" *ngIf="showFolderNameInput && selectedItem === rootFolder" (click)="$event.stopPropagation()">
-                  <input 
-                    #folderNameInput
-                    type="text" 
-                    [(ngModel)]="newFolderName" 
-                    (keyup.enter)="addFolder()" 
-                    (keyup.escape)="hideContextMenu()"
-                    placeholder="Ordnername eingeben"
-                    autofocus>
-                  <div class="button-group">
-                    <button (click)="addFolder()" [disabled]="!newFolderName.trim()">Erstellen</button>
-                    <button (click)="hideContextMenu()">Abbrechen</button>
-                  </div>
-                </div>
               </div>
               
-              <span class="size">
-                {{ getItemSize(rootFolder) }}
-              </span>
               <span class="toggle" *ngIf="rootFolder.children?.length">
                 {{ rootFolder.expanded ? '▼' : '▶' }}
               </span>
@@ -81,6 +87,7 @@
   <li class="folder-item" [class.expanded]="folder.expanded">
     <div class="item-header" (click)="toggleFolder($event, folder)">
       <span class="icon">{{ getItemIcon(folder) }}</span>
+      <span class="size">{{ getItemSize(folder) }}</span>
       <span class="name" [title]="folder.name">{{ folder.name }}</span>
       <span class="spacer"></span>
       
@@ -89,37 +96,8 @@
         <span class="menu-dots" (click)="$event.stopPropagation(); toggleContextMenu($event, folder)">
           ⋯
         </span>
-        <div class="dropdown-menu" [class.show]="showMenu && selectedItem === folder" (click)="$event.stopPropagation()">
-          <button class="dropdown-item" (click)="showNewFolderInput(folder)">
-            <span class="menu-icon">📁</span>
-            <span>Neuer Ordner</span>
-          </button>
-          <button class="dropdown-item" (click)="triggerFileInput()">
-            <span class="menu-icon">📄</span>
-            <span>Datei hochladen</span>
-          </button>
-        </div>
-        
-        <!-- Eingabefeld für den neuen Ordnernamen -->
-        <div class="folder-name-input" *ngIf="showFolderNameInput && selectedItem === folder" (click)="$event.stopPropagation()">
-          <input 
-            #folderNameInput
-            type="text" 
-            [(ngModel)]="newFolderName" 
-            (keyup.enter)="addFolder()" 
-            (keyup.escape)="hideContextMenu()"
-            placeholder="Ordnername eingeben"
-            autofocus>
-          <div class="button-group">
-            <button (click)="addFolder()" [disabled]="!newFolderName.trim()">Erstellen</button>
-            <button (click)="hideContextMenu()">Abbrechen</button>
-          </div>
-        </div>
       </div>
       
-      <span class="size">
-        {{ getItemSize(folder) }}
-      </span>
       <span class="toggle" *ngIf="folder.children?.length">
         {{ folder.expanded ? '▼' : '▶' }}
       </span>

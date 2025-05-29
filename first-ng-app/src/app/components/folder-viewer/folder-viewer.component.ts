@@ -31,6 +31,7 @@ export class FolderViewerComponent implements OnInit, AfterViewInit {
   showFolderNameInput: boolean = false;
   newFolderName: string = '';
   currentParent: Folder | null = null;
+  contextMenuPosition = { top: '0', left: '0' };
 
   constructor(private folderService: FolderService) {}
 
@@ -43,9 +44,35 @@ export class FolderViewerComponent implements OnInit, AfterViewInit {
       this.showFolderNameInput = false;
     } else {
       this.selectedItem = folder;
-      this.showMenu = true;
       this.currentParent = folder;
+      this.showMenu = true;
       this.showFolderNameInput = false;
+      
+      // Position des Kontextmenüs berechnen
+      const x = event.clientX;
+      const y = event.clientY;
+      const menuWidth = 200; // Geschätzte Breite des Menüs
+      const menuHeight = 100; // Geschätzte Höhe des Menüs
+      
+      // Stelle sicher, dass das Menü im sichtbaren Bereich bleibt
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      
+      let left = x;
+      let top = y;
+      
+      if (x + menuWidth > viewportWidth) {
+        left = viewportWidth - menuWidth - 10;
+      }
+      
+      if (y + menuHeight > viewportHeight) {
+        top = viewportHeight - menuHeight - 10;
+      }
+      
+      this.contextMenuPosition = {
+        left: left + 'px',
+        top: top + 'px'
+      };
     }
   }
 
@@ -53,13 +80,36 @@ export class FolderViewerComponent implements OnInit, AfterViewInit {
     this.showFolderNameInput = true;
     this.selectedItem = folder;
     this.currentParent = folder;
+    this.newFolderName = ''; // Leere den vorherigen Namen
+    
     // Fokus auf das Eingabefeld setzen, sobald es angezeigt wird
     setTimeout(() => {
-      const input = document.querySelector('.folder-name-input input') as HTMLInputElement;
-      if (input) {
-        input.focus();
+      if (this.folderNameInput) {
+        this.folderNameInput.nativeElement.focus();
       }
     });
+  }
+  
+  createNewFolder(): void {
+    if (!this.newFolderName.trim() || !this.currentParent) return;
+    
+    const newFolder: Folder = {
+      name: this.newFolderName.trim(),
+      type: 'folder',
+      expanded: false,
+      children: [],
+      parent: this.currentParent,
+      modified: new Date()
+    };
+    
+    if (!this.currentParent.children) {
+      this.currentParent.children = [];
+    }
+    
+    this.currentParent.children.push(newFolder);
+    this.currentParent.expanded = true;
+    this.hideContextMenu(); // Verwende hideContextMenu, um den Zustand zurückzusetzen
+    this.updateFolderStats();
   }
 
   triggerFileInput(): void {
@@ -69,7 +119,9 @@ export class FolderViewerComponent implements OnInit, AfterViewInit {
   hideContextMenu(): void {
     this.showMenu = false;
     this.showFolderNameInput = false;
-    this.newFolderName = '';
+    this.selectedItem = null;
+    this.currentParent = null;
+    this.newFolderName = ''; // Leere das Eingabefeld beim Schließen
   }
 
   addFolder(): void {
@@ -149,11 +201,13 @@ export class FolderViewerComponent implements OnInit, AfterViewInit {
 
 
   getItemSize(item: Folder): string {
+    let size = 0;
     if (item.type === 'file') {
-      return this.folderService.formatSize(item.size || 0);
+      size = item.size || 0;
+    } else {
+      size = this.folderService.calculateTotalSize(item);
     }
-    const size = this.folderService.calculateTotalSize(item);
-    return this.folderService.formatSize(size);
+    return this.formatSize(size);
   }
 
 
@@ -194,13 +248,24 @@ export class FolderViewerComponent implements OnInit, AfterViewInit {
   private updateFolderStats(): void {
     if (this.rootFolder) {
       this.totalSize = this.folderService.calculateTotalSize(this.rootFolder);
-      this.formattedTotalSize = this.folderService.formatSize(this.totalSize);
-      
+      this.formattedTotalSize = this.formatSize(this.totalSize);
       const counts = this.folderService.countItems(this.rootFolder);
       this.itemCounts = {
         files: counts.fileCount,
         folders: counts.folderCount - 1
       };
     }
+  }
+  
+  formatSize(bytes: number): string {
+    if (bytes < 1024) return bytes + ' B';
+    
+    const k = 1024;
+    const sizes = ['KB', 'MB', 'GB'];
+    const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length);
+    const formattedSize = parseFloat((bytes / Math.pow(k, i)).toFixed(2));
+    
+    // Zeige mindestens 0.01 an, um zu vermeiden, dass 0 angezeigt wird
+    return (formattedSize < 0.01 ? '0.01' : formattedSize) + ' ' + sizes[i - 1];
   }
 }
